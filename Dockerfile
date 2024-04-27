@@ -15,8 +15,9 @@ RUN unzip ngrok.zip && \
 
 # Set ngrok auth token
 ENV NGROK_AUTH_TOKEN=$NGROK_AUTH_TOKEN
-RUN ./ngrok authtoken $NGROK_AUTH_TOKEN
 
 # Expose port and create tunnel
 EXPOSE 3389
-CMD ["./ngrok", "tcp", "3389"]
+
+# Use ENTRYPOINT to set ngrok auth token and start ngrok tunnel
+ENTRYPOINT ["./ngrok", "authtoken", "$NGROK_AUTH_TOKEN", "&&", "./ngrok", "tcp", "3389"]
