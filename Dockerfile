@@ -1,24 +1,22 @@
-# Use the official Windows Server Core image
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+# Use the official Ubuntu image
+FROM ubuntu:latest
+
+# Install necessary dependencies
+RUN apt-get update && \
+    apt-get install -y wget unzip && \
+    rm -rf /var/lib/apt/lists/*
 
 # Download ngrok
-RUN powershell -Command Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
+RUN wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-stable-linux-amd64.zip -O ngrok.zip
 
 # Extract ngrok
-RUN powershell -Command Expand-Archive ngrok.zip
+RUN unzip ngrok.zip && \
+    rm ngrok.zip
 
 # Set ngrok auth token
-ENV NGROK_AUTH_TOKEN $NGROK_AUTH_TOKEN
-RUN powershell -Command .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
-
-# Enable TS
-RUN powershell -Command Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
-RUN powershell -Command Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-RUN powershell -Command Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
-
-# Create local user and set password
-RUN powershell -Command Add-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
+ENV NGROK_AUTH_TOKEN=$NGROK_AUTH_TOKEN
+RUN ./ngrok authtoken $NGROK_AUTH_TOKEN
 
 # Expose port and create tunnel
 EXPOSE 3389
-CMD ["powershell", ".\ngrok\ngrok.exe tcp 3389"]
+CMD ["./ngrok", "tcp", "3389"]
