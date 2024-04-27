@@ -20,4 +20,4 @@ ENV NGROK_AUTH_TOKEN="2fImcTPq1NnyclnXZePhudATr9y_6VQ6fcAAxUVpXtjcK6jvr"
 # EXPOSE 3389
 
 # Set ngrok auth token and start ngrok tunnel as the entrypoint
-CMD ["./ngrok", "authtoken", "2fImcTPq1NnyclnXZePhudATr9y_6VQ6fcAAxUVpXtjcK6jvr"]
+ENTRYPOINT ["./ngrok", "authtoken", "2fImcTPq1NnyclnXZePhudATr9y_6VQ6fcAAxUVpXtjcK6jvr"]
